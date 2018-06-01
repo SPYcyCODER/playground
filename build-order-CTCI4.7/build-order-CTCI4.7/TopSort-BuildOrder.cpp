@@ -69,6 +69,39 @@ void getBuildOrder(unordered_set<node*>& nodes,unordered_set<node*>& visited,sta
     }
 }
 
+void buildOrderHelper(node* curNode,unordered_set<node*>& visited,unordered_set<node*>& curSet,stack<node*>& out,bool& loopCheck){
+    if(loopCheck)
+        return;
+    for(auto dep:curNode->children){
+        if(curSet.find(dep) != curSet.end()){
+            loopCheck=true;
+            break;
+        }
+        if(visited.find(dep) != visited.end())
+            continue;
+        curSet.insert(dep);
+        buildOrderHelper(dep, visited,curSet, out,loopCheck);
+    }
+    if(visited.find(curNode) == visited.end() && !loopCheck){
+        visited.insert(curNode);
+        out.push(curNode);
+    }
+}
+void getBuildOrderWithLoopCheck(unordered_set<node*>& nodes,unordered_set<node*>& visited,stack<node*>& out){
+    for(auto _node:nodes){
+        if(visited.find(_node) != visited.end())
+            continue;
+        unordered_set<node*> curSet;
+        bool loopCheck=false;
+        buildOrderHelper(_node, visited,curSet, out,loopCheck);
+        if(loopCheck){
+            std::cout<<"ERROR : LOOP EXISTS in Graph\n";
+            while(!out.empty())
+                out.pop();
+            break;
+        }
+    }
+}
 int main(){
     node* root=new node('a');
     node* two=new node('b');
@@ -76,11 +109,13 @@ int main(){
     node* fur=new node('d');
     node* fiv=new node('e');
     node* six=new node('f');
+    node* gee=new node('g');
     root->children.push_back(six);
     two->children.push_back(six);
     thr->children.push_back(fur);
     fur->children.push_back(root);
     fur->children.push_back(six);
+    gee->children.push_back(fiv);
     unordered_set<node*> _uset;
     _uset.insert(root);
     _uset.insert(two);
@@ -88,6 +123,7 @@ int main(){
     _uset.insert(fur);
     _uset.insert(fiv);
     _uset.insert(six);
+    _uset.insert(gee);
     stack<node*> out;
     unordered_set<node*> visited;
     getBuildOrder(_uset, visited, out);
@@ -95,6 +131,34 @@ int main(){
     while(!out.empty()){
         std::cout<<out.top()->data<<" ";
         out.pop();
+    }
+    std::cout<<endl;
+    node* one=new node('1');
+    node* too=new node('2');
+    node* tree=new node('3');
+    node* fawr=new node('4');
+    node* faayv=new node('5');
+    node* seecs=new node('6');
+    one->children.push_back(too);
+    one->children.push_back(tree);
+    one->children.push_back(fawr);
+    too->children.push_back(tree);
+    fawr->children.push_back(faayv);
+    faayv->children.push_back(seecs);
+    //seecs->children.push_back(fawr);
+    unordered_set<node*> _uset_l;
+    _uset_l.insert(one);
+    _uset_l.insert(too);
+    _uset_l.insert(tree);
+    _uset_l.insert(fawr);
+    _uset_l.insert(faayv);
+    _uset_l.insert(seecs);
+    stack<node*> out_l;
+    unordered_set<node*> visited_l;
+    getBuildOrderWithLoopCheck(_uset_l,visited_l,out_l);
+    while(!out_l.empty()){
+        std::cout<<out_l.top()->data<<" ";
+        out_l.pop();
     }
     std::cout<<endl;
 }
