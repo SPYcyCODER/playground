@@ -27,6 +27,7 @@ void computeTowerOfHanoi(int num_pegs){
         pegs[0].push(ring_num);
     }
     computeTowerOfHanoi(num_pegs,pegs,0,1,2);
+    cout<<"---------\n";
 }
 
 int main(int argc, const char * argv[]) {
